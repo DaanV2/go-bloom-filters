@@ -10,6 +10,9 @@ on:
         required: false
         default: "1m"
         type: string
+  push:
+    tags:
+      - "v*"
 
 jobs:
   fuzz:
@@ -99,4 +102,3 @@ jobs:
             **/testdata/fuzz/
           if-no-files-found: ignore
           retention-days: 30
-
