@@ -1,0 +1,62 @@
+{
+    "editor.formatOnSave": true,
+    "[markdown]": {
+        "editor.wordWrap": "off",
+    },
+    // Go settings
+    "go.delveConfig": {
+        "showRegisters": true
+    },
+    "gopls": {
+        "ui.semanticTokens": true,
+        "ui.codelenses": {
+            "gc_details": true,
+            "generate": true
+        },
+        "ui.diagnostic.analyses": {
+            // What the diagnoser needs to check:
+            "maprange": true,
+            "yield": true,
+            "shadow": true,
+            "unusedwrite": true,
+            "appends": true,
+            "atomic": true,
+            "bools": true,
+            "copylocks": true,
+            "defers": true,
+            "simplifyslice": true,
+            "simplifyrange": true,
+            "stdmethods": true,
+            "stringintconv": true,
+            "errorsas": true
+        }
+    },
+    // Slice of life hints:
+    "go.coverShowCounts": true,
+    "go.formatTool": "gofmt",
+    "go.inlayHints.compositeLiteralFields": true,
+    "go.inlayHints.compositeLiteralTypes": true,
+    "go.inlayHints.constantValues": true,
+    "go.inlayHints.parameterNames": true,
+    "go.languageServerFlags": [
+        "-rpc.trace"
+    ],
+    "go.lintOnSave": "workspace",
+    "go.lintTool": "golangci-lint-v2",
+    "go.lintFlags": [
+        "--fix"
+    ],
+    "go.trace.server": "verbose",
+    "go.coverOnSave": true,
+    "go.coverageOptions": "showBothCoveredAndUncoveredCode",
+    "go.coverMode": "atomic",
+    "go.coverageDecorator": {
+        "type": "gutter",
+        "coveredHighlightColor": "rgba(64,128,128,0.5)",
+        "uncoveredHighlightColor": "rgba(128,64,64,0.25)",
+        "coveredBorderColor": "rgba(64,128,128,0.5)",
+        "uncoveredBorderColor": "rgba(128,64,64,0.25)",
+        "coveredGutterStyle": "blockblue",
+        "uncoveredGutterStyle": "slashyellow"
+    },
+}
