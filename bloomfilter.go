@@ -7,32 +7,38 @@ import (
 )
 
 var (
-	ErrInvalidSize = errors.New("invalid size")
+	ErrInvalidSize          = errors.New("invalid size")
+	ErrRequiredHashFunction = errors.New("at least one hash function is required")
+	ErrHashIsNil            = errors.New("hash functions cannot be nil")
 )
+
+var _ IBloomFilter = &BloomFilter{}
 
 type BloomFilter struct {
 	bits   Bits
 	hashes []bloomhashes.HashFunction
 }
 
+// NewBloomFilter creates a new bloom filter with the given options.
+// It returns an error if the size of the bloom filter is invalid or if any of the hash functions are nil.
 func NewBloomFilter(opts ...BloomFilterOptions) (*BloomFilter, error) {
-	r := &BloomFilter{}
+	bf := &BloomFilter{}
 	for _, opt := range opts {
-		opt(r)
+		opt.applyBF(bf)
 	}
-	if r.bits.Size() == 0 {
+	if bf.bits.Size() == 0 {
 		return nil, ErrInvalidSize
 	}
-	if len(r.hashes) == 0 {
-		return nil, errors.New("at least one hash function is required")
+	if len(bf.hashes) == 0 {
+		return nil, ErrRequiredHashFunction
 	}
-	for _, hashFunc := range r.hashes {
+	for _, hashFunc := range bf.hashes {
 		if hashFunc == nil {
-			return nil, errors.New("hash functions cannot be nil")
+			return nil, ErrHashIsNil
 		}
 	}
 
-	return r, nil
+	return bf, nil
 }
 
 // Add adds the given data to the bloom filter by applying each hash function to the data and setting the corresponding bits in the filter.
@@ -45,7 +51,7 @@ func (bf *BloomFilter) Add(data []byte) {
 		}
 		n := hashFunc(data, buf[:])
 		for _, hash := range buf[:n] {
-			bf.Set(hash)
+			bf.SetHash(hash)
 		}
 	}
 }
@@ -60,7 +66,7 @@ func (bf *BloomFilter) Test(data []byte) bool {
 		}
 		n := hashFunc(data, buf[:])
 		for _, hash := range buf[:n] {
-			if !bf.Get(hash) {
+			if !bf.GetHash(hash) {
 				return false
 			}
 		}
@@ -70,12 +76,12 @@ func (bf *BloomFilter) Test(data []byte) bool {
 }
 
 // Set sets the bit at the index corresponding to the given hash value to 1.
-func (bf *BloomFilter) Set(hash uint64) {
+func (bf *BloomFilter) SetHash(hash uint64) {
 	bf.bits.Setbit(bf.index(hash))
 }
 
 // Get checks if the bit at the index corresponding to the given hash value is set to 1.
-func (bf *BloomFilter) Get(hash uint64) bool {
+func (bf *BloomFilter) GetHash(hash uint64) bool {
 	return bf.bits.Getbit(bf.index(hash))
 }
 
