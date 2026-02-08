@@ -1,0 +1,102 @@
+name: 🧬 Fuzz Testing
+env:
+  FORCE_COLOR: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      fuzztime:
+        description: "Fuzz time per test (e.g., 1m, 5m, 10m)"
+        required: false
+        default: "1m"
+        type: string
+
+jobs:
+  fuzz:
+    name: 🧪 Fuzz Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: 🏗️ Setup Golang
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ./go.mod
+
+      - name: 🧬 Run Fuzz Tests
+        run: |
+          # Find all directories containing fuzz tests
+          echo "Finding all fuzz tests..."
+          FUZZ_DIRS=$(find . -name "*_test.go" -exec grep -l "func Fuzz" {} \; 2>/dev/null | while read f; do dirname "$f"; done | sed 's|^\./||' | sort -u)
+
+          if [ -z "$FUZZ_DIRS" ]; then
+            echo "No fuzz tests found in the repository"
+            exit 0
+          fi
+
+          echo "Found fuzz test directories:"
+          echo "$FUZZ_DIRS"
+          echo ""
+
+          # Get the fuzz time from input, default to 1m
+          FUZZ_TIME="${{ inputs.fuzztime }}"
+          if [ -z "$FUZZ_TIME" ]; then
+            FUZZ_TIME="1m"
+          fi
+
+          echo "Running fuzz tests for $FUZZ_TIME each..."
+          echo ""
+
+          # Run fuzz tests in each directory
+          EXIT_CODE=0
+          while IFS= read -r DIR; do
+            if [ -n "$DIR" ]; then
+              echo "=========================================="
+              echo "Processing directory: ./$DIR"
+              echo "=========================================="
+              
+              # Get fuzz tests in this directory
+              TESTS=$(cd "$DIR" && go test -list=Fuzz . 2>&1 | grep '^Fuzz' || true)
+              
+              if [ -z "$TESTS" ]; then
+                echo "No fuzz tests found in $DIR"
+                continue
+              fi
+              
+              # Run each test
+              while IFS= read -r TEST_NAME; do
+                if [ -n "$TEST_NAME" ]; then
+                  echo "Running: $TEST_NAME in ./$DIR (for $FUZZ_TIME)"
+                  
+                  if go test -fuzz="^${TEST_NAME}$" -fuzztime="$FUZZ_TIME" "./$DIR" 2>&1; then
+                    echo "✅ $TEST_NAME passed"
+                    echo "✅ $TEST_NAME passed" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "❌ $TEST_NAME failed"
+                    echo "❌ $TEST_NAME failed" >> $GITHUB_STEP_SUMMARY
+                    EXIT_CODE=1
+                  fi
+                  echo ""
+                fi
+              done <<< "$TESTS"
+            fi
+          done <<< "$FUZZ_DIRS"
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "Some fuzz tests failed"
+            exit 1
+          fi
+
+          echo "All fuzz tests completed successfully!"
+
+      - name: 📊 Upload Fuzz Corpus
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: fuzz-corpus
+          path: |
+            **/testdata/fuzz/
+          if-no-files-found: ignore
+          retention-days: 30
+

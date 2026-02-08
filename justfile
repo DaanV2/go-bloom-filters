@@ -23,3 +23,6 @@ format:
 
 pprof:
     go tool pprof --http=:8080 ./cpu.out
+
+fuzz:
+    go test -fuzz=Fuzz -fuzztime=30s ./...
