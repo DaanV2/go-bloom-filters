@@ -175,6 +175,7 @@ func Test_Sha1(t *testing.T) {
 }
 
 // Test SHA224 hash function
+// Note: SHA224 uses SHA-2, not SHA-3, despite the constant name SHA3_224_HASHES
 func Test_Sha224(t *testing.T) {
 	data := []byte("test data")
 	hashes := make([]uint64, bloomhashes.SHA3_224_HASHES)
