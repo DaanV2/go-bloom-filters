@@ -48,4 +48,3 @@ func Sha512(data []byte, hashes []uint64) int {
 
 	return PutUint64(b[:], hashes)
 }
-

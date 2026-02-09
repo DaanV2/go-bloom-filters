@@ -21,8 +21,8 @@ func PutUint64(b []byte, values []uint64) int {
 		return 0
 	}
 	l := min(len(b)/8, len(values))
-	tmp := unsafe.Slice((*uint64)(unsafe.Pointer(&b[0])), l) // nolint:gosec // #nosec G103 -- This is safe because we are only writing to the byte slice and not reading from it.
-	copy(tmp, values[:l])
+	tmp := unsafe.Slice((*uint64)(unsafe.Pointer(&b[0])), l) // nolint:gosec // #nosec G103 -- This is safe because we are creating a uint64 view of the byte slice to extract uint64 values from it.
+	copy(values[:l], tmp)
 
 	return l
 }

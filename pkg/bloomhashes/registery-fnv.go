@@ -43,7 +43,7 @@ func Fnv1_128(data []byte, hashes []uint64) int {
 	hasher.Reset()
 	_, _ = hasher.Write(data)
 	sum := hasher.Sum(nil)
-	
+
 	return PutUint64(sum, hashes)
 }
 
@@ -54,6 +54,6 @@ func Fnv1_128a(data []byte, hashes []uint64) int {
 	hasher.Reset()
 	_, _ = hasher.Write(data)
 	sum := hasher.Sum(nil)
-	
+
 	return PutUint64(sum, hashes)
 }
