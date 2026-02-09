@@ -199,7 +199,9 @@ func Test_Sha256(t *testing.T) {
 	n := bloomhashes.Sha256(data, hashes)
 	assert.Equal(t, bloomhashes.SHA256_HASHES, n, "Expected SHA256_HASHES to be generated")
 	assert.NotZero(t, hashes[0], "First hash should not be zero")
-	assert.NotZero(t, hashes[1], hashes[2], hashes[3], "All hashes should be populated")
+	assert.NotZero(t, hashes[1], "Second hash should not be zero")
+	assert.NotZero(t, hashes[2], "Third hash should not be zero")
+	assert.NotZero(t, hashes[3], "Fourth hash should not be zero")
 }
 
 // Test SHA3_384 hash function
