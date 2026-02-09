@@ -425,7 +425,7 @@ func Example_md5() {
 func Example_wrapHasher64() {
 	// Wrap the FNV-1a hash function
 	hashFunc := bloomhashes.WrapHasher64(fnv.New64a)
-	
+
 	data := []byte("wrapped hash example")
 	hashes := make([]uint64, 1)
 

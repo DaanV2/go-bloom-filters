@@ -43,7 +43,7 @@ func Test_NewBloomFilter_InvalidSize(t *testing.T) {
 		bloomfilters.WithSize(0),
 		bloomfilters.WithHashFunctions([]bloomhashes.HashFunction{bloomhashes.Fnv1_64}),
 	)
-	
+
 	// NewBits(0) creates at least 64 bits, so this should actually succeed
 	require.NoError(t, err)
 	require.NotNil(t, bf)
@@ -176,7 +176,7 @@ func Test_BloomFilter_LargeData(t *testing.T) {
 	for i := range differentData {
 		differentData[i] = byte((i + 128) % 256)
 	}
-	
+
 	// Note: There's a small chance of false positive, but with large enough filter
 	// and multiple hash functions, it should be unlikely
 	result := bf.Test(differentData)
