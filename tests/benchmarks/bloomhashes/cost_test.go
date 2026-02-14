@@ -14,6 +14,7 @@ func Benchmark_Hashes_Cost(b *testing.B) {
 	}
 
 	tests := []testHash{
+		{name: "MD5", hash: bloomhashes.MD5},
 		{name: "Sha1", hash: bloomhashes.Sha1},
 		{name: "Sha224", hash: bloomhashes.Sha224},
 		{name: "Sha3_384", hash: bloomhashes.Sha3_384},

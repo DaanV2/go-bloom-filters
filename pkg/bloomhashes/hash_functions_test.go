@@ -1,7 +1,7 @@
 package bloomhashes_test
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // nolint:gosec // Used for testing, not security
 	"crypto/sha256"
 	"fmt"
 	"hash/crc64"
@@ -226,7 +226,7 @@ func Test_WrapHasher64(t *testing.T) {
 
 	// Verify it matches direct hash
 	hasher := fnv.New64()
-	hasher.Write(data)
+	_, _ = hasher.Write(data)
 	expected := hasher.Sum64()
 	assert.Equal(t, expected, result, "Wrapped hash should match direct hash")
 }
