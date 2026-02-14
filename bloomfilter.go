@@ -82,6 +82,20 @@ func (bf *BloomFilter) GetHash(hash uint64) bool {
 	return bf.bits.Getbit(bf.index(hash))
 }
 
+func (bf *BloomFilter) BitsCount() uint64 {
+	return bf.bits.BitsCount()
+}
+
+func (bf *BloomFilter) Words() []uint64 {
+	return bf.bits.Words()
+}
+
+// Bits returns a copy of the Bits struct representing the bit array of the bloom filter.
+// Modifying the returned Bits will not affect the internal state of the bloom filter.
+func (bf *BloomFilter) Bits() Bits {
+	return bf.bits.Copy()
+}
+
 func (bf *BloomFilter) index(hash uint64) uint64 {
 	return hash % bf.bits.Size()
 }

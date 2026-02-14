@@ -65,3 +65,31 @@ func WithAppendHashFunctions(hashFunctions []bloomhashes.HashFunction) BloomFilt
 		hashFunctions: hashFunctions,
 	}
 }
+
+type withWords struct {
+	words []uint64
+}
+
+func (w withWords) applyBF(bf *BloomFilter)            { bf.bits = Bits{data: w.words} }
+func (w withWords) applyCBF(bf *ConcurrentBloomFilter) { bf.bits = Bits{data: w.words} }
+
+// WithWords sets the bits of the bloom filter using a slice of uint64 words. It initializes the Bits structure with the provided words, allowing for direct manipulation of the bloom filter's bit array.
+func WithWords(words []uint64) BloomFilterOptions {
+	return withWords{
+		words: words,
+	}
+}
+
+type withBits struct {
+	bits Bits
+}
+
+func (w withBits) applyBF(bf *BloomFilter)            { bf.bits = w.bits }
+func (w withBits) applyCBF(bf *ConcurrentBloomFilter) { bf.bits = w.bits }
+
+// WithBits sets the bits of the bloom filter using a Bits structure. It directly assigns the provided Bits to the bloom filter, allowing for more flexible manipulation of the bit array.
+func WithBits(bits Bits) BloomFilterOptions {
+	return withBits{
+		bits: bits,
+	}
+}

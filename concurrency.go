@@ -73,6 +73,16 @@ func (bf *ConcurrentBloomFilter) SetHash(hash uint64) {
 	bf.setHashes(bf.index(hash))
 }
 
+func (bf *ConcurrentBloomFilter) BitsCount() uint64 {
+	return bf.bits.BitsCount()
+}
+
+// Bits returns a copy of the Bits struct representing the bit array of the bloom filter.
+// Modifying the returned Bits will not affect the internal state of the bloom filter.
+func (bf *ConcurrentBloomFilter) Bits() Bits {
+	return bf.bits.Copy()
+}
+
 func (bf *ConcurrentBloomFilter) getHashes(indexes ...uint64) bool {
 	bf.lock.Lock()
 	defer bf.lock.Unlock()
