@@ -24,7 +24,7 @@ func Test_DefaultHashFunctions(t *testing.T) {
 	for i, hashFunc := range hashFuncs {
 		hashes := make([]uint64, 10)
 		n := hashFunc(data, hashes)
-		assert.Greater(t, n, 0, "Hash funPositived shn return at least one hash", i)
+		assert.Positive(t, n, "Hash funPositived shn return at least one hash", i)
 	}
 }
 
@@ -39,7 +39,7 @@ func Test_AllHashFunctions(t *testing.T) {
 	for i, hashFunc := range hashFuncs {
 		hashes := make([]uint64, 10)
 		n := hashFunc(data, hashes)
-		assert.Greater(t, n, 0, "Hash function %d shouldPositive at nt one hash", i)
+		assert.Positive(t, n, "Hash function %d shouldPositive at nt one hash", i)
 	}
 }
 
@@ -168,6 +168,7 @@ func Test_Sha1(t *testing.T) {
 	for i := range n {
 		if hashes[i] != 0 {
 			foundNonZero = true
+
 			break
 		}
 	}
@@ -333,6 +334,7 @@ func Test_WrapFunction(t *testing.T) {
 		result := make([]byte, 16)
 		copy(result, data)
 		copy(result[8:], data)
+
 		return result
 	}
 
