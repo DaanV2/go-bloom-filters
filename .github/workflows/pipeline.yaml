@@ -18,10 +18,10 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
       - name: 📦 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🏗️ Setup Golang
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: ./go.mod
 
