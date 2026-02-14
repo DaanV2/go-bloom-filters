@@ -10,6 +10,8 @@ type Bits struct {
 	data []uint64
 }
 
+// NewBits creates a new Bits structure with the specified size in bits.
+// It calculates the necessary number of uint64 words to accommodate the specified size.
 func NewBits(size uint64) Bits {
 	words := (size + 63) / 64
 
@@ -33,12 +35,14 @@ func (b *Bits) Setbit(index uint64) {
 	b.data[word] |= 1 << bit
 }
 
+// Getbit returns the value of the bit at the specified index (true if set, false otherwise).
 func (b *Bits) Getbit(index uint64) bool {
 	word, bit := b.calcaluteIndex(index)
 
 	return (b.data[word] & (1 << bit)) != 0
 }
 
+// Equals returns true if this Bits structure is equal to the other Bits structure.
 func (b *Bits) Equals(other *Bits) bool {
 	return slices.Equal(b.data, other.data)
 }
@@ -51,6 +55,7 @@ func (b *Bits) Words() []uint64 {
 	return w
 }
 
+// Copy returns a deep copy of the Bits structure.
 func (b *Bits) Copy() Bits {
 	return Bits{
 		data: b.Words(),

@@ -7,12 +7,16 @@ import (
 
 var _ IBloomFilter = &ConcurrentBloomFilter{}
 
+// ConcurrentBloomFilter is a thread-safe bloom filter that uses a spinlock for concurrent access.
+// It is safe to call Add and Test methods from multiple goroutines.
 type ConcurrentBloomFilter struct {
 	bits   Bits
 	hashes []bloomhashes.HashFunction
 	lock   xsync.SpinLock
 }
 
+// NewConcurrentBloomFilter creates a new concurrent bloom filter with the given options.
+// It returns an error if the size of the bloom filter is invalid or if any of the hash functions are nil.
 func NewConcurrentBloomFilter(opts ...BloomFilterOptions) (*ConcurrentBloomFilter, error) {
 	bf := &ConcurrentBloomFilter{
 		lock: *xsync.NewSpinLock(),
@@ -36,6 +40,8 @@ func NewConcurrentBloomFilter(opts ...BloomFilterOptions) (*ConcurrentBloomFilte
 	return bf, nil
 }
 
+// Add adds the given data to the bloom filter by applying each hash function to the data and setting the corresponding bits in the filter.
+// This method is thread-safe.
 func (bf *ConcurrentBloomFilter) Add(data []byte) {
 	indexes := make([]uint64, 0, len(bf.hashes))
 
@@ -50,6 +56,8 @@ func (bf *ConcurrentBloomFilter) Add(data []byte) {
 	bf.setHashes(indexes...)
 }
 
+// Test checks if the given data is likely to be in the bloom filter by applying each hash function to the data and checking if the corresponding bits in the filter are set.
+// This method is thread-safe. It returns true if all bits are set, indicating that the data is likely to be in the filter, and false otherwise.
 func (bf *ConcurrentBloomFilter) Test(data []byte) bool {
 	indexes := make([]uint64, 0, len(bf.hashes))
 
@@ -65,14 +73,19 @@ func (bf *ConcurrentBloomFilter) Test(data []byte) bool {
 	return bf.getHashes(indexes...)
 }
 
+// GetHash checks if the bit at the index corresponding to the given hash value is set to 1.
+// This method is thread-safe.
 func (bf *ConcurrentBloomFilter) GetHash(hash uint64) bool {
 	return bf.getHashes(bf.index(hash))
 }
 
+// SetHash sets the bit at the index corresponding to the given hash value to 1.
+// This method is thread-safe.
 func (bf *ConcurrentBloomFilter) SetHash(hash uint64) {
 	bf.setHashes(bf.index(hash))
 }
 
+// BitsCount returns the total number of bits that are set to 1 in the bloom filter.
 func (bf *ConcurrentBloomFilter) BitsCount() uint64 {
 	return bf.bits.BitsCount()
 }
