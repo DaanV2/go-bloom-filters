@@ -1,10 +1,14 @@
 package bloomfilters
 
+// GenericBloomFilter is a wrapper around IBloomFilter that allows using custom types with a serializer function.
+// It converts custom types to byte slices before passing them to the underlying bloom filter.
 type GenericBloomFilter[T any] struct {
 	base     IBloomFilter
 	getBytes func(T) []byte
 }
 
+// NewGenericBloomFilter creates a new generic bloom filter that wraps the provided bloom filter and uses the given serializer function.
+// The serializer function converts custom types to byte slices for hashing.
 func NewGenericBloomFilter[T any](base IBloomFilter, getBytes func(T) []byte) *GenericBloomFilter[T] {
 	return &GenericBloomFilter[T]{
 		base:     base,
@@ -41,6 +45,7 @@ func (g *GenericBloomFilter[T]) SetHash(hash uint64) {
 	g.base.SetHash(hash)
 }
 
+// BitsCount returns the total number of bits that are set to 1 in the bloom filter.
 func (bf *GenericBloomFilter[T]) BitsCount() uint64 {
 	return bf.base.BitsCount()
 }

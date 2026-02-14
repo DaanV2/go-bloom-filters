@@ -10,6 +10,7 @@ type SpinLock struct {
 	locked atomic.Uint32
 }
 
+// NewSpinLock creates a new SpinLock instance.
 func NewSpinLock() *SpinLock {
 	return &SpinLock{}
 }

@@ -10,8 +10,8 @@ import (
 // Disregarding any bytes that fall outside of the length of the provided slice of uint64 values.
 type HashFunction func(data []byte) uint64
 
-// DefaultHashFunctions returns a slice of default hash functions to be used in the bloom filter.
-// Currently, it returns an empty slice, indicating that no default hash functions are provided.
+// WrapFunction wraps a function that returns a byte slice into a HashFunction.
+// It converts the byte slice output to a uint64 hash value.
 func WrapFunction(f func(data []byte) []byte) HashFunction {
 	return func(data []byte) uint64 {
 		b := f(data)
@@ -20,6 +20,8 @@ func WrapFunction(f func(data []byte) []byte) HashFunction {
 	}
 }
 
+// WrapHasher64 wraps a hash.Hash64 factory function into a HashFunction.
+// It creates a new hasher, writes the data, and returns the 64-bit hash sum.
 func WrapHasher64(h func() hash.Hash64) HashFunction {
 	return func(data []byte) uint64 {
 		hasher := h()
@@ -29,6 +31,8 @@ func WrapHasher64(h func() hash.Hash64) HashFunction {
 	}
 }
 
+// WrapHasher wraps a hash.Hash factory function into a HashFunction.
+// It creates a new hasher, writes the data, computes the hash sum, and converts it to a uint64.
 func WrapHasher(h func() hash.Hash) HashFunction {
 	return func(data []byte) uint64 {
 		hasher := h()

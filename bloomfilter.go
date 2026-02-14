@@ -14,6 +14,8 @@ var (
 
 var _ IBloomFilter = &BloomFilter{}
 
+// BloomFilter is a probabilistic data structure that tests whether an element is a member of a set.
+// False positive matches are possible, but false negatives are not.
 type BloomFilter struct {
 	bits   Bits
 	hashes []bloomhashes.HashFunction
@@ -82,10 +84,12 @@ func (bf *BloomFilter) GetHash(hash uint64) bool {
 	return bf.bits.Getbit(bf.index(hash))
 }
 
+// BitsCount returns the total number of bits that are set to 1 in the bloom filter.
 func (bf *BloomFilter) BitsCount() uint64 {
 	return bf.bits.BitsCount()
 }
 
+// Words returns a copy slice of uint64 words representing the bits in the bloom filter.
 func (bf *BloomFilter) Words() []uint64 {
 	return bf.bits.Words()
 }
