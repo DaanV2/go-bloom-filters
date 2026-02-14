@@ -3,7 +3,7 @@
 [![Checks](https://github.com/DaanV2/go-bloom-filters/actions/workflows/pipeline.yaml/badge.svg)](https://github.com/DaanV2/go-bloom-filters/actions/workflows/pipeline.yaml)
 [![🧬 Fuzz Testing](https://github.com/DaanV2/go-bloom-filters/actions/workflows/fuzz-testing.yaml/badge.svg)](https://github.com/DaanV2/go-bloom-filters/actions/workflows/fuzz-testing.yaml)
 
-A fast, generic, and concurrent [Bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) implementation in Go.
+A basic / generic and/or concurrent [Bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) implementation in Go.
 
 ## Installation
 
