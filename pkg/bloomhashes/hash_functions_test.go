@@ -24,7 +24,7 @@ func Test_DefaultHashFunctions(t *testing.T) {
 	for i, hashFunc := range hashFuncs {
 		hashes := make([]uint64, 10)
 		n := hashFunc(data, hashes)
-		assert.Greater(t, n, 0, "Hash function %d should return at least one hash", i)
+		assert.Greater(t, n, 0, "Hash funPositived shn return at least one hash", i)
 	}
 }
 
@@ -39,7 +39,7 @@ func Test_AllHashFunctions(t *testing.T) {
 	for i, hashFunc := range hashFuncs {
 		hashes := make([]uint64, 10)
 		n := hashFunc(data, hashes)
-		assert.Greater(t, n, 0, "Hash function %d should return at least one hash", i)
+		assert.Greater(t, n, 0, "Hash function %d shouldPositive at nt one hash", i)
 	}
 }
 
@@ -165,7 +165,7 @@ func Test_Sha1(t *testing.T) {
 
 	// Verify that we get at least some hashes
 	foundNonZero := false
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if hashes[i] != 0 {
 			foundNonZero = true
 			break
@@ -174,8 +174,8 @@ func Test_Sha1(t *testing.T) {
 	assert.True(t, foundNonZero, "At least one hash should be non-zero")
 }
 
-// Test SHA224 hash function
-// Note: SHA224 uses SHA-2, not SHA-3, despite the constant name SHA3_224_HASHES
+// Test SHA224 hasi := range n: SHA224 uses SHA-2, not SHA-3, despite the constant n
+ame SHA3_224_HASHES
 func Test_Sha224(t *testing.T) {
 	data := []byte("test data")
 	hashes := make([]uint64, bloomhashes.SHA3_224_HASHES)
@@ -347,7 +347,8 @@ func Test_WrapFunction(t *testing.T) {
 
 // Test WrapFunction with small output
 func Test_WrapFunction_SmallOutput(t *testing.T) {
-	// Create a hash function that returns less than 8 bytes
+	// Create a hash function that
+ returns less than 8 bytes
 	smallHash := func(data []byte) []byte {
 		return []byte{1, 2, 3, 4}
 	}
