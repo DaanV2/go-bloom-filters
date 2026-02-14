@@ -9,42 +9,32 @@ import (
 
 // SHA hashes
 
-const SHA1_HASHES = sha1.Size / uint64_size // The number of uint64 values that can be extracted from a SHA-1 hash.
-
-func Sha1(data []byte, hashes []uint64) int {
+func Sha1(data []byte) uint64 {
 	b := sha1.Sum(data) // nolint:gosec // #nosec G401 -- This is safe because we are only using SHA-1 for hashing and not for cryptographic purposes.
 
-	return PutUint64(b[:], hashes)
+	return bytesToUint64(b[:]) ^ bytesToUint64(b[8:])
 }
 
-const SHA3_224_HASHES = 28 / uint64_size // The number of uint64 values that can be extracted from a SHA3-224 hash.
-
-func Sha224(data []byte, hashes []uint64) int {
+func Sha224(data []byte) uint64 {
 	b := sha256.Sum224(data)
 
-	return PutUint64(b[:], hashes)
+	return bytesToUint64(b[:]) ^ bytesToUint64(b[8:]) ^ bytesToUint64(b[16:])
 }
 
-const SHA3_384_HASHES = 48 / uint64_size // The number of uint64 values that can be extracted from a SHA3-384 hash.
-
-func Sha3_384(data []byte, hashes []uint64) int {
+func Sha3_384(data []byte) uint64 {
 	b := sha3.Sum384(data)
 
-	return PutUint64(b[:], hashes)
+	return bytesToUint64(b[:]) ^ bytesToUint64(b[8:]) ^ bytesToUint64(b[16:]) ^ bytesToUint64(b[24:]) ^ bytesToUint64(b[32:]) ^ bytesToUint64(b[40:])
 }
 
-const SHA256_HASHES = sha256.Size / uint64_size // The number of uint64 values that can be extracted from a SHA-256 hash.
-
-func Sha256(data []byte, hashes []uint64) int {
+func Sha256(data []byte) uint64 {
 	b := sha256.Sum256(data)
 
-	return PutUint64(b[:], hashes)
+	return bytesToUint64(b[:]) ^ bytesToUint64(b[8:]) ^ bytesToUint64(b[16:]) ^ bytesToUint64(b[24:])
 }
 
-const SHA3_512_HASHES = sha512.Size / uint64_size // The number of uint64 values that can be extracted from a SHA3-512 hash.
-
-func Sha512(data []byte, hashes []uint64) int {
+func Sha512(data []byte) uint64 {
 	b := sha512.Sum512(data)
 
-	return PutUint64(b[:], hashes)
+	return bytesToUint64(b[:]) ^ bytesToUint64(b[8:]) ^ bytesToUint64(b[16:]) ^ bytesToUint64(b[24:]) ^ bytesToUint64(b[32:]) ^ bytesToUint64(b[40:]) ^ bytesToUint64(b[48:]) ^ bytesToUint64(b[56:])
 }

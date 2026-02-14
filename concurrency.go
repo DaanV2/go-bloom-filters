@@ -37,39 +37,32 @@ func NewConcurrentBloomFilter(opts ...BloomFilterOptions) (*ConcurrentBloomFilte
 }
 
 func (bf *ConcurrentBloomFilter) Add(data []byte) {
-	var buf [bloomhashes.MAX_HASHES]uint64
+	indexes := make([]uint64, 0, len(bf.hashes))
 
 	for _, hashFunc := range bf.hashes {
 		if hashFunc == nil {
 			continue
 		}
-		n := hashFunc(data, buf[:])
-		for i := range buf[:n] {
-			buf[i] = bf.index(buf[i])
-		}
-
-		bf.setHashes(buf[:n]...)
+		hash := hashFunc(data)
+		indexes = append(indexes, bf.index(hash))
 	}
+
+	bf.setHashes(indexes...)
 }
 
 func (bf *ConcurrentBloomFilter) Test(data []byte) bool {
-	var buf [bloomhashes.MAX_HASHES]uint64
+	indexes := make([]uint64, 0, len(bf.hashes))
 
+	// Spent more time on hashing, so we don't have to lock for each bit access.
 	for _, hashFunc := range bf.hashes {
 		if hashFunc == nil {
 			continue
 		}
-		n := hashFunc(data, buf[:])
-		for i := range buf[:n] {
-			buf[i] = bf.index(buf[i])
-		}
-
-		if !bf.getHashes(buf[:n]...) {
-			return false
-		}
+		hash := hashFunc(data)
+		indexes = append(indexes, bf.index(hash))
 	}
 
-	return true
+	return bf.getHashes(indexes...)
 }
 
 func (bf *ConcurrentBloomFilter) GetHash(hash uint64) bool {

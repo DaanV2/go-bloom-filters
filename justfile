@@ -15,6 +15,12 @@ show-coverage-report:
 
 coverage-report: test show-coverage-report
 
+benchmark:
+    go test -benchmem -run=^$$ -bench . ./tests/benchmarks/...
+
+benchmark-package:
+	go test -benchmem -run=^$$ -cpuprofile ./cpu.pprof -bench . ./tests/benchmarks/$PACKAGE
+
 lint:
     go tool golangci-lint run -v --fix
 
@@ -22,7 +28,7 @@ format:
     go fmt ./...
 
 pprof:
-    go tool pprof --http=:8080 ./cpu.out
+    go tool pprof --http=:8080 ./cpu.pprof
 
 fuzz:
     go test -fuzz=Fuzz -fuzztime=30s ./...

@@ -43,32 +43,29 @@ func NewBloomFilter(opts ...BloomFilterOptions) (*BloomFilter, error) {
 
 // Add adds the given data to the bloom filter by applying each hash function to the data and setting the corresponding bits in the filter.
 func (bf *BloomFilter) Add(data []byte) {
-	var buf [bloomhashes.MAX_HASHES]uint64
+	indexes := make([]uint64, 0, len(bf.hashes))
 
 	for _, hashFunc := range bf.hashes {
 		if hashFunc == nil {
 			continue
 		}
-		n := hashFunc(data, buf[:])
-		for _, hash := range buf[:n] {
-			bf.SetHash(hash)
-		}
+		indexes = append(indexes, bf.index(hashFunc(data)))
+	}
+
+	for _, hash := range indexes {
+		bf.SetHash(hash)
 	}
 }
 
 // Test checks if the given data is likely to be in the bloom filter by applying each hash function to the data and checking if the corresponding bits in the filter are set. It returns true if all bits are set, indicating that the data is likely to be in the filter, and false otherwise.
 func (bf *BloomFilter) Test(data []byte) bool {
-	var buf [bloomhashes.MAX_HASHES]uint64
-
 	for _, hashFunc := range bf.hashes {
 		if hashFunc == nil {
 			continue
 		}
-		n := hashFunc(data, buf[:])
-		for _, hash := range buf[:n] {
-			if !bf.GetHash(hash) {
-				return false
-			}
+		hash := hashFunc(data)
+		if !bf.GetHash(hash) {
+			return false
 		}
 	}
 

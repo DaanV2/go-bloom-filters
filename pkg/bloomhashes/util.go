@@ -1,28 +1,10 @@
 package bloomhashes
 
-import "unsafe"
-
-// ToUint64 tries to convert a byte slice to a slice of uint64 values.
-// It processes the input byte slice in chunks of 8 bytes, converting each chunk into a uint64 value and appending it to the resulting slice. If the length of the input byte slice is not a multiple of 8, the remaining bytes are ignored.
-func ToUint64(b []byte) []uint64 {
-	if len(b) < 8 {
-		return nil
-	}
-
-	l := len(b) / 8
-	result := make([]uint64, l)
-	_ = PutUint64(b, result)
-
-	return result
-}
-
-func PutUint64(b []byte, values []uint64) int {
-	if len(b) < 8 {
+func bytesToUint64(buf []byte) uint64 {
+	if len(buf) < 8 {
 		return 0
 	}
-	l := min(len(b)/8, len(values))
-	tmp := unsafe.Slice((*uint64)(unsafe.Pointer(&b[0])), l) // nolint:gosec // #nosec G103 -- This is safe because we are creating a uint64 view of the byte slice to extract uint64 values from it.
-	copy(values[:l], tmp)
 
-	return l
+	return uint64(buf[0]) | uint64(buf[1])<<8 | uint64(buf[2])<<16 | uint64(buf[3])<<24 |
+		uint64(buf[4])<<32 | uint64(buf[5])<<40 | uint64(buf[6])<<48 | uint64(buf[7])<<56
 }
