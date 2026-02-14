@@ -81,3 +81,17 @@ sbf := bloomfilters.NewGenericBloomFilter(bf, func(s string) []byte {
 sbf.Add("hello")
 fmt.Println(sbf.Test("hello")) // true
 ```
+
+### Bloom Settings
+
+The `pkg/bloomsettings` package provides helper functions for tuning your filter:
+
+- `OptimalHashFunctions(m, n)` — returns the optimal number of hash functions for *m* bits and *n* expected elements
+- `FalsePositiveRate(m, n, k)` — calculates the expected false-positive rate for *m* bits, *n* elements, and *k* hash functions
+
+```go
+import "github.com/daanv2/go-bloom-filters/pkg/bloomsettings"
+
+k := bloomsettings.OptimalHashFunctions(1024, 100)   // optimal k
+fp := bloomsettings.FalsePositiveRate(1024, 100, k)   // expected false-positive rate
+```
