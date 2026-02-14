@@ -174,8 +174,7 @@ func Test_Sha1(t *testing.T) {
 	assert.True(t, foundNonZero, "At least one hash should be non-zero")
 }
 
-// Test SHA224 hasi := range n: SHA224 uses SHA-2, not SHA-3, despite the constant n
-ame SHA3_224_HASHES
+// Test SHA224 hasi := range n: SHA224 uses SHA-2, not SHA-3, despite the constant name SHA3_224_HASHES
 func Test_Sha224(t *testing.T) {
 	data := []byte("test data")
 	hashes := make([]uint64, bloomhashes.SHA3_224_HASHES)
@@ -348,7 +347,7 @@ func Test_WrapFunction(t *testing.T) {
 // Test WrapFunction with small output
 func Test_WrapFunction_SmallOutput(t *testing.T) {
 	// Create a hash function that
- returns less than 8 bytes
+	//  returns less than 8 bytes
 	smallHash := func(data []byte) []byte {
 		return []byte{1, 2, 3, 4}
 	}
