@@ -13,6 +13,7 @@ type ConcurrentBloomFilter struct {
 	bits   Bits
 	hashes []bloomhashes.HashFunction
 	lock   xsync.SpinLock
+	pools  *xsync.Pool[[]uint64]
 }
 
 // NewConcurrentBloomFilter creates a new concurrent bloom filter with the given options.
@@ -36,6 +37,9 @@ func NewConcurrentBloomFilter(opts ...BloomFilterOptions) (*ConcurrentBloomFilte
 			return nil, ErrHashIsNil
 		}
 	}
+	bf.pools = xsync.NewPool(func() []uint64 {
+		return make([]uint64, len(bf.hashes))
+	})
 
 	return bf, nil
 }
@@ -43,7 +47,11 @@ func NewConcurrentBloomFilter(opts ...BloomFilterOptions) (*ConcurrentBloomFilte
 // Add adds the given data to the bloom filter by applying each hash function to the data and setting the corresponding bits in the filter.
 // This method is thread-safe.
 func (bf *ConcurrentBloomFilter) Add(data []byte) {
-	hashes := make([]uint64, len(bf.hashes))
+	hashes := bf.pools.Get()
+	// This shouldn't happen, but just in case, grow the amount of items
+	for len(hashes) < len(bf.hashes) {
+		hashes = append(hashes, 0)
+	}
 
 	for i, hashFunc := range bf.hashes {
 		if hashFunc == nil {
@@ -53,12 +61,17 @@ func (bf *ConcurrentBloomFilter) Add(data []byte) {
 	}
 
 	bf.setHashes(hashes)
+	bf.pools.Put(hashes)
 }
 
 // Test checks if the given data is likely to be in the bloom filter by applying each hash function to the data and checking if the corresponding bits in the filter are set.
 // This method is thread-safe. It returns true if all bits are set, indicating that the data is likely to be in the filter, and false otherwise.
 func (bf *ConcurrentBloomFilter) Test(data []byte) bool {
-	hashes := make([]uint64, len(bf.hashes))
+	hashes := bf.pools.Get()
+	// This shouldn't happen, but just in case, grow the amount of items
+	for len(hashes) < len(bf.hashes) {
+		hashes = append(hashes, 0)
+	}
 
 	// Spent more time on hashing, so we don't have to lock for each bit access.
 	for i, hashFunc := range bf.hashes {
@@ -68,7 +81,10 @@ func (bf *ConcurrentBloomFilter) Test(data []byte) bool {
 		hashes[i] = hashFunc(data)
 	}
 
-	return bf.getHashes(hashes)
+	v := bf.getHashes(hashes)
+	bf.pools.Put(hashes)
+
+	return v
 }
 
 // GetHash checks if the bit at the index corresponding to the given hash value is set to 1.
