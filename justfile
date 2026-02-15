@@ -19,7 +19,7 @@ benchmark:
 	go test -benchmem -run=^$$ -bench . ./tests/benchmarks/...
 
 benchmark-package package:
-	go test -benchmem -run=^$$ -benchtime 10s -cpuprofile ./cpu.pprof -bench . ./tests/benchmarks/{{package}}
+	go test -benchmem -run=^$$ -benchtime 10s -cpuprofile ./cpu-{{package}}.pprof -bench . ./tests/benchmarks/{{package}}
 
 lint:
 	go tool golangci-lint run -v --fix
@@ -27,8 +27,16 @@ lint:
 format:
 	go fmt ./...
 
-pprof:
-	go tool pprof --http=:8080 ./cpu.pprof
+pprof package:
+	go tool pprof --http=:8080 ./cpu-{{package}}.pprof
 
 fuzz:
 	go test -fuzz=Fuzz -fuzztime=30s ./...
+
+pgo:
+    go tool pprof -proto ./cpu.pprof > default.pgo
+
+build-pgo:
+	just benchmark-package bloomfilters
+	just benchmark-package bloomhashes
+	go tool pprof -proto ./cpu-bloomfilters.pprof ./cpu-bloomhashes.pprof > default.pgo

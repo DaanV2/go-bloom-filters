@@ -6,12 +6,12 @@ package bloomhashes
 func DefaultHashFunctions() []HashFunction {
 	return []HashFunction{
 		// Sorted on cost, from lowest to highest
-		Fnv1_64,
 		Fnv1_64a,
-		Crc64_ECMA,
+		Fnv1_64,
 		Crc64_ISO,
-		Fnv1_128a,
+		Crc64_ECMA,
 		Fnv1_128,
+		Fnv1_128a,
 	}
 }
 
@@ -21,12 +21,12 @@ func DefaultHashFunctions() []HashFunction {
 func AllHashFunctions() []HashFunction {
 	return []HashFunction{
 		// Sorted on cost, from lowest to highest
-		Fnv1_64,
 		Fnv1_64a,
-		Crc64_ECMA,
+		Fnv1_64,
 		Crc64_ISO,
-		Fnv1_128a,
+		Crc64_ECMA,
 		Fnv1_128,
+		Fnv1_128a,
 		Sha256,
 		Sha224,
 		Sha1,
