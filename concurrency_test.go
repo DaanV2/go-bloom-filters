@@ -96,7 +96,10 @@ func Test_Concurrent_Bloomfilter_Test(t *testing.T) {
 					v := bg.Test(d[i].data)
 					if d[i].set {
 						require.True(t, v, "Expected item to be in the filter")
-					} else if v { }
+					} else if v {
+						// False positive, we can't assert on this but we can log it
+						t.Logf("False positive for item: %v", d[i].data)
+					}
 				}
 			}
 		})
