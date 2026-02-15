@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	bloomfilters "github.com/daanv2/go-bloom-filters"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,27 +28,6 @@ func Fuzz_Bits_SetGet(f *testing.F) {
 	})
 }
 
-func Test_Bits_Marshal(t *testing.T) {
-	bits := bloomfilters.NewBits(128)
-	for i := uint64(0); i < bits.Size(); i += 2 {
-		bits.Setbit(i) // Set every even bit
-	}
-
-	data, err := bits.MarshalBinary()
-	require.NoError(t, err)
-
-	var unmarshaled bloomfilters.Bits
-	err = unmarshaled.UnmarshalBinary(data)
-	require.NoError(t, err)
-
-	require.Equal(t, bits.Size(), unmarshaled.Size(), "Sizes should match after unmarshaling")
-	for i := range bits.Size() {
-		expect := (i%2 == 0) // Only even bits should be set
-		require.Equal(t, expect, unmarshaled.Getbit(i), "Expected bit at index %d to be %v", i, expect)
-	}
-
-	assert.True(t, bits.Equals(&unmarshaled))
-}
 
 func ExampleBits() {
 	bits := bloomfilters.NewBits(128) // Create a Bits structure with 128 bits

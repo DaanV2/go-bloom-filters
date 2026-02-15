@@ -45,16 +45,11 @@ func NewBloomFilter(opts ...BloomFilterOptions) (*BloomFilter, error) {
 
 // Add adds the given data to the bloom filter by applying each hash function to the data and setting the corresponding bits in the filter.
 func (bf *BloomFilter) Add(data []byte) {
-	indexes := make([]uint64, 0, len(bf.hashes))
-
 	for _, hashFunc := range bf.hashes {
 		if hashFunc == nil {
 			continue
 		}
-		indexes = append(indexes, bf.index(hashFunc(data)))
-	}
-
-	for _, hash := range indexes {
+		hash := hashFunc(data)
 		bf.SetHash(hash)
 	}
 }
@@ -76,12 +71,12 @@ func (bf *BloomFilter) Test(data []byte) bool {
 
 // Set sets the bit at the index corresponding to the given hash value to 1.
 func (bf *BloomFilter) SetHash(hash uint64) {
-	bf.bits.Setbit(bf.index(hash))
+	bf.bits.SetHash(hash)
 }
 
 // Get checks if the bit at the index corresponding to the given hash value is set to 1.
 func (bf *BloomFilter) GetHash(hash uint64) bool {
-	return bf.bits.Getbit(bf.index(hash))
+	return bf.bits.GetHash(hash)
 }
 
 // BitsCount returns the total number of bits that are set to 1 in the bloom filter.
@@ -98,8 +93,4 @@ func (bf *BloomFilter) Words() []uint64 {
 // Modifying the returned Bits will not affect the internal state of the bloom filter.
 func (bf *BloomFilter) Bits() Bits {
 	return bf.bits.Copy()
-}
-
-func (bf *BloomFilter) index(hash uint64) uint64 {
-	return hash % bf.bits.Size()
 }

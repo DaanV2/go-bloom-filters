@@ -1,6 +1,7 @@
 package bloomfilters
 
 import (
+	"bytes"
 	"encoding"
 	"encoding/base64"
 	"encoding/binary"
@@ -71,10 +72,18 @@ func (b *Bits) UnmarshalText(text []byte) error {
 
 // MarshalJSON implements [json.Marshaler].
 func (b *Bits) MarshalJSON() ([]byte, error) {
-	return b.MarshalText()
+	d, err := b.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(string(d))
 }
 
 // UnmarshalJSON implements [json.Unmarshaler].
 func (b *Bits) UnmarshalJSON(d []byte) error {
+	// unquote
+	d = bytes.Trim(d, `"`)
+
 	return b.UnmarshalText(d)
 }

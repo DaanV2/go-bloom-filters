@@ -25,6 +25,24 @@ func (b *Bits) Size() uint64 {
 	return uint64(len(b.data)) * 64
 }
 
+// SetHash sets the bit at the index corresponding to the given hash value to 1.
+func (b *Bits) SetHash(hash uint64) {
+	if b.Size() == 0 {
+		return // No bits to set, do nothing
+	}
+
+	b.Setbit(hash % b.Size())
+}
+
+// GetHash checks if the bit at the index corresponding to the given hash value is set to 1.
+func (b *Bits) GetHash(hash uint64) bool {
+	if b.Size() == 0 {
+		return false // No bits to set, do nothing
+	}
+
+	return b.Getbit(hash % b.Size())
+}
+
 // Setbit sets the bit at the specified index to 1. If the index is out of bounds (greater than or equal to the size of the Bits), it will not set any bit.
 func (b *Bits) Setbit(index uint64) {
 	word, bit := b.calcaluteIndex(index)
