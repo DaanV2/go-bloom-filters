@@ -27,37 +27,41 @@ func (b *Bits) Size() uint64 {
 
 // SetHash sets the bit at the index corresponding to the given hash value to 1.
 func (b *Bits) SetHash(hash uint64) {
-	if b.Size() == 0 {
-		return // No bits to set, do nothing
-	}
+	// Lemire's "fastrange"
+	index, _ := bits.Mul64(hash, b.Size())
 
-	b.Setbit(hash % b.Size())
+	b.Setbit(index)
 }
 
 // GetHash checks if the bit at the index corresponding to the given hash value is set to 1.
 func (b *Bits) GetHash(hash uint64) bool {
-	if b.Size() == 0 {
-		return false // No bits to set, do nothing
-	}
+	// Lemire's "fastrange"
+	index, _ := bits.Mul64(hash, b.Size())
 
-	return b.Getbit(hash % b.Size())
+	return b.Getbit(index)
 }
 
 // Setbit sets the bit at the specified index to 1. If the index is out of bounds (greater than or equal to the size of the Bits), it will not set any bit.
 func (b *Bits) Setbit(index uint64) {
 	word, bit := b.calcaluteIndex(index)
 
-	if word >= uint64(len(b.data)) {
-		return // Index is out of bounds, do not set any bit
+	// Index is out of bounds?, do not set any bit
+	bitmask := uint64(1 << bit)
+	if word < uint64(len(b.data)) {
+		b.data[word] |= bitmask
 	}
-	b.data[word] |= 1 << bit
 }
 
 // Getbit returns the value of the bit at the specified index (true if set, false otherwise).
-func (b *Bits) Getbit(index uint64) bool {
+func (b *Bits) Getbit(index uint64) (result bool) {
 	word, bit := b.calcaluteIndex(index)
 
-	return (b.data[word] & (1 << bit)) != 0
+	bitmask := uint64(1 << bit)
+	if word < uint64(len(b.data)) {
+		result = (b.data[word] & bitmask) != 0
+	}
+
+	return
 }
 
 // Equals returns true if this Bits structure is equal to the other Bits structure.
@@ -67,16 +71,13 @@ func (b *Bits) Equals(other *Bits) bool {
 
 // Words returns a copy slice of uint64 words representing the bits in the bloom filter.
 func (b *Bits) Words() []uint64 {
-	w := make([]uint64, len(b.data))
-	copy(w, b.data)
-
-	return w
+	return slices.Clone(b.data)
 }
 
 // Copy returns a deep copy of the Bits structure.
 func (b *Bits) Copy() Bits {
 	return Bits{
-		data: b.Words(),
+		data: slices.Clone(b.data),
 	}
 }
 
