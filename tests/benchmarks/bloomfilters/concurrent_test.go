@@ -12,14 +12,15 @@ import (
 )
 
 func Benchmark_Concurrent(b *testing.B) {
+	const threads = 32
 	const bf_size = 100
 	const arrays = 100
 	const array_length = 32
 
-	data := testutil.MoreBytes(arrays*8, array_length)
-	blobs := make([][][]byte, 8)
-	for i := range 8 {
-		blobs[i] = data[(arrays/8)*i : (arrays/8)*(i+1)]
+	data := testutil.MoreBytes(arrays*threads, array_length)
+	blobs := make([][][]byte, threads)
+	for i := range threads {
+		blobs[i] = data[(arrays/threads)*i : (arrays/threads)*(i+1)]
 	}
 
 	b.Run("Add", func(b *testing.B) {
@@ -106,14 +107,15 @@ func Benchmark_Concurrent(b *testing.B) {
 	})
 }
 func Benchmark_Concurrent_Shuffled(b *testing.B) {
+	const threads = 32
 	const bf_size = 100
 	const arrays = 100
 	const array_length = 32
 
-	data := testutil.MoreBytes(arrays*8, array_length)
-	blobs := make([][][]byte, 8)
-	for i := range 8 {
-		blobs[i] = data[(arrays/8)*i : (arrays/8)*(i+1)]
+	data := testutil.MoreBytes(arrays*threads, array_length)
+	blobs := make([][][]byte, threads)
+	for i := range threads {
+		blobs[i] = data[(arrays/threads)*i : (arrays/threads)*(i+1)]
 	}
 
 	b.Run("Add", func(b *testing.B) {
