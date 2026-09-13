@@ -1,6 +1,7 @@
 package xsync
 
 import (
+	"runtime"
 	"sync/atomic"
 )
 
@@ -18,7 +19,7 @@ func NewSpinLock() *SpinLock {
 // Lock acquires the spin lock, spinning until successful.
 func (s *SpinLock) Lock() {
 	for !s.locked.CompareAndSwap(0, 1) {
-		// runtime.Gosched() // yield to avoid starving other goroutines
+		runtime.Gosched() // yield to avoid starving other goroutines, hampers single core performance, but not multithreading performance
 	}
 }
 
